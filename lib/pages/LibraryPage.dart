@@ -1,5 +1,6 @@
 //장민석님 page
 import "package:flutter/material.dart";
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LibraryPage extends StatefulWidget {
   @override
@@ -7,7 +8,33 @@ class LibraryPage extends StatefulWidget {
 }
 
 class _LibraryPageState extends State<LibraryPage> {
-  final int selectedId = 0;
+  int selectedId = 0;
+  late SharedPreferences prefs;
+
+  Future initPrefs() async {
+    prefs = await SharedPreferences.getInstance();
+    final int? id = prefs.getInt('libraryPage_selectedId');
+    if (id != null) {
+      setState(() {
+        selectedId = id;
+      });
+    } else {
+      prefs.setInt('libraryPage_selectedId', 0);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initPrefs();
+  }
+
+  void onTapLocationButton(int id) {
+    setState(() {
+      selectedId = id;
+      prefs.setInt('libraryPage_selectedId', id);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,18 +67,21 @@ class _LibraryPageState extends State<LibraryPage> {
                     iconData: Icons.watch_later_rounded,
                     myId: 0,
                     isSelected: (selectedId == 0) ? true : false,
+                    onTapLocationButton: onTapLocationButton,
                   ),
                   LocalButton(
                     name: '법학',
                     iconData: Icons.gavel_rounded,
                     myId: 1,
                     isSelected: (selectedId == 1) ? true : false,
+                    onTapLocationButton: onTapLocationButton,
                   ),
                   LocalButton(
                     name: '안성',
                     iconData: Icons.auto_stories_rounded,
                     myId: 2,
                     isSelected: (selectedId == 2) ? true : false,
+                    onTapLocationButton: onTapLocationButton,
                   ),
                 ],
               ),
@@ -72,12 +102,14 @@ class LocalButton extends StatefulWidget {
   final IconData iconData;
   final bool isSelected;
   final int myId;
+  final Function onTapLocationButton;
   const LocalButton({
     Key? key,
     required this.name,
     required this.iconData,
     required this.isSelected,
     required this.myId,
+    required this.onTapLocationButton,
   }) : super(key: key);
 
   @override
@@ -88,9 +120,7 @@ class _LocalButtonState extends State<LocalButton> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        print(widget.myId);
-      },
+      onTap: () => widget.onTapLocationButton(widget.myId),
       child: Container(
         width: 100,
         decoration: BoxDecoration(
@@ -98,7 +128,10 @@ class _LocalButtonState extends State<LocalButton> {
         ),
         child: Column(
           children: [
-            Icon(widget.iconData),
+            Icon(
+              widget.iconData,
+              color: widget.isSelected ? Colors.blue : Colors.black,
+            ),
             const SizedBox(
               height: 10,
             ),
