@@ -1,7 +1,14 @@
 //장민석님 page
 import "package:flutter/material.dart";
 
-class LibraryPage extends StatelessWidget {
+class LibraryPage extends StatefulWidget {
+  @override
+  State<LibraryPage> createState() => _LibraryPageState();
+}
+
+class _LibraryPageState extends State<LibraryPage> {
+  final int selectedId = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,22 +30,28 @@ class LibraryPage extends StatelessWidget {
             Container(
               margin: const EdgeInsets.symmetric(
                 vertical: 20,
-                horizontal: 60,
+                horizontal: 30,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
+                children: [
                   LocalButton(
                     name: '서울',
                     iconData: Icons.watch_later_rounded,
+                    myId: 0,
+                    isSelected: (selectedId == 0) ? true : false,
                   ),
                   LocalButton(
                     name: '법학',
                     iconData: Icons.gavel_rounded,
+                    myId: 1,
+                    isSelected: (selectedId == 1) ? true : false,
                   ),
                   LocalButton(
                     name: '안성',
                     iconData: Icons.auto_stories_rounded,
+                    myId: 2,
+                    isSelected: (selectedId == 2) ? true : false,
                   ),
                 ],
               ),
@@ -54,31 +67,51 @@ class LibraryPage extends StatelessWidget {
   }
 }
 
-class LocalButton extends StatelessWidget {
+class LocalButton extends StatefulWidget {
   final String name;
   final IconData iconData;
+  final bool isSelected;
+  final int myId;
   const LocalButton({
     Key? key,
     required this.name,
     required this.iconData,
+    required this.isSelected,
+    required this.myId,
   }) : super(key: key);
 
   @override
+  State<LocalButton> createState() => _LocalButtonState();
+}
+
+class _LocalButtonState extends State<LocalButton> {
+  @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Icon(iconData),
-        const SizedBox(
-          height: 10,
+    return GestureDetector(
+      onTap: () {
+        print(widget.myId);
+      },
+      child: Container(
+        width: 100,
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0),
         ),
-        Text(
-          name,
-          style: const TextStyle(
-            fontSize: 16,
-            color: Colors.black,
-          ),
+        child: Column(
+          children: [
+            Icon(widget.iconData),
+            const SizedBox(
+              height: 10,
+            ),
+            Text(
+              widget.name,
+              style: TextStyle(
+                fontSize: 16,
+                color: widget.isSelected ? Colors.blue : Colors.black,
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }
